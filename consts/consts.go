@@ -19,6 +19,15 @@ func GetHTTPClient() *http.Client {
 	return client
 }
 
+func GetApplicationResources() Application {
+	if yamlLoader == nil {
+		yamlLoader = &YamlLoader{}
+		yamlLoader.getConfig()
+	}
+
+	return yamlLoader.Application
+}
+
 func GetTwitterAPIResources() TwitterV2API {
 	if yamlLoader == nil {
 		yamlLoader = &YamlLoader{}

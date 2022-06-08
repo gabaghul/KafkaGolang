@@ -1,3 +1,6 @@
+application:
+  port: 5000
+
 twitter-v2-api:
   filtered-stream:
     base: https://api.twitter.com/2/tweets/search/stream?tweet.fields=created_at&expansions=author_id

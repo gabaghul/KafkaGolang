@@ -1,8 +1,7 @@
 package main
 
 import (
-	"fmt"
-
+	"github.com/gabaghul/golang-kafka/caller"
 	"github.com/gabaghul/golang-kafka/consts"
 	"github.com/gabaghul/golang-kafka/logger"
 	"github.com/joho/godotenv"
@@ -20,7 +19,5 @@ func init() {
 }
 
 func main() {
-	log := logger.GetLogger()
-	resources := consts.GetTwitterAPIResources()
-	log.Info().Msg(fmt.Sprintf("Bearer Token: %s", resources.BearerToken))
+	caller.GetRules()
 }

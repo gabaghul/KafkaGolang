@@ -9,6 +9,7 @@ import (
 )
 
 type YamlLoader struct {
+	Application  Application  `yaml:"application"`
 	TwitterV2API TwitterV2API `yaml:"twitter-v2-api"`
 }
 
@@ -20,6 +21,10 @@ type TwitterV2API struct {
 type FilteredStream struct {
 	Base  string `yaml:"base"`
 	Rules string `yaml:"rules"`
+}
+
+type Application struct {
+	Port int64 `yaml:"port"`
 }
 
 func (yml *YamlLoader) getConfig() *YamlLoader {
