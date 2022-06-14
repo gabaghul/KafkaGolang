@@ -1,6 +1,7 @@
 package caller
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -60,7 +61,6 @@ func GetRules() (res model.GetStreamRuleResponse) {
 	log.Info().Msg("starting get rules process")
 
 	apiResources := consts.GetTwitterAPIResources()
-	contentType := "application/json"
 
 	req, err := http.NewRequest("GET", apiResources.FilteredStream.Rules, nil)
 	if err != nil {
@@ -68,7 +68,6 @@ func GetRules() (res model.GetStreamRuleResponse) {
 		return
 	}
 
-	req.Header.Add("Content-Type", contentType)
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiResources.BearerToken))
 
 	resp, err := client.Do(req)
@@ -135,4 +134,58 @@ func DeleteAllRules(IDs []string) {
 	}
 
 	log.Warn().Msg(fmt.Sprint("rules didnt delete as expected, see returned status code: ", resp.StatusCode))
+}
+
+func GetTwitterStream() {
+	log := logger.GetLogger()
+	client := consts.GetHTTPClient()
+
+	log.Info().Msg("starting get streaming process")
+
+	apiResources := consts.GetTwitterAPIResources()
+
+	req, err := http.NewRequest("GET", apiResources.FilteredStream.Base, nil)
+	if err != nil {
+		log.Err(err).Msg("couldnt create request for twitter get stream api")
+		return
+	}
+
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiResources.BearerToken))
+
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Err(err).Msg("couldnt post into twitter get stream api")
+		return
+	}
+	if resp.StatusCode != http.StatusOK {
+		log.Error().Msg(fmt.Sprint("didnt get stream as expected, see returned status code: ", resp.StatusCode))
+		return
+	}
+	reader := bufio.NewReader(resp.Body)
+	i := 1
+	for {
+		line, err := reader.ReadBytes('\n')
+		if err == io.EOF {
+			log.Info().Msg("stream finished, terminating process successfully")
+			return
+		}
+		if err != nil {
+			if i > 5 {
+				log.Err(err).Msg("retries exceeded, terminating process")
+				return
+			}
+			log.Err(err).Msg(fmt.Sprintf("something went wrong on stream buffer, attempting for the %d time", i))
+			i++
+			continue
+		}
+		payload := string(line)
+		if len(payload) > 2 {
+			log.Info().Msg(payload)
+		}
+		// res :=
+		// err = json.Unmarshal(line, &res)
+		// if err != nil {
+		// 	log.Err(err).Msg("couldnt marshall get stream rule json response")
+		// }
+	}
 }

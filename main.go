@@ -12,8 +12,8 @@ import (
 )
 
 func init() {
-	err := godotenv.Load()
 	log := logger.GetLogger()
+	err := godotenv.Load()
 	if err != nil {
 		log.Panic().Msg("PANIC! couldnt load environment variables, do you have a .env file created?")
 	}
@@ -44,4 +44,6 @@ func main() {
 	if env == "dev" {
 		log.Debug().Msg(fmt.Sprint("RESPONSE: ", rules))
 	}
+
+	caller.GetTwitterStream()
 }
