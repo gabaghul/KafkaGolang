@@ -3,6 +3,8 @@ package consts
 import (
 	"net/http"
 	"sync"
+
+	"github.com/gabaghul/golang-kafka/model"
 )
 
 var (
@@ -35,4 +37,17 @@ func GetTwitterAPIResources() TwitterV2API {
 	}
 
 	return yamlLoader.TwitterV2API
+}
+
+func GetSetRules() []model.SetStreamRule {
+	return []model.SetStreamRule{
+		{
+			Value: "dog has:images",
+			Tag:   "dog pictures",
+		},
+		{
+			Value: "cat has:images",
+			Tag:   "cat pictures",
+		},
+	}
 }
